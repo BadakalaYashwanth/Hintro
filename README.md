@@ -1,20 +1,141 @@
-<<<<<<< HEAD
-# Hintro-Assessment
-=======
-# React + Vite
+# Task Board Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, responsive Kanban-style Task Board application built with React and Vite. Organize your tasks efficiently with drag-and-drop functionality, status management, and local persistence.
 
-Currently, two official plugins are available:
+## 🚀 Live Demo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+[**View Live Deployment**](https://yourtaskboard.netlify.app/login)
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## ✨ Features
 
-## Expanding the ESLint configuration
+- **Task Management**: Create, edit, and delete tasks easily.
+- **Drag & Drop Interface**: Intuitive drag-and-drop to move tasks between statuses (To Do, Doing, Done).
+- **Persistent Storage**: Changes are automatically saved to your browser's Local Storage, keeping your data safe across sessions.
+- **Filtering & Search**: Quickly find tasks by searching titles or filtering by priority (Low, Medium, High).
+- **Responsive Layout**: Designed to work seamlessly on various screen sizes.
+- **Activity Log**: Tracks your recent actions on the board.
+- **Dark Mode UI**: Sleek, modern dark-themed interface for better visual comfort.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
->>>>>>> 30468c1 (Initial task board implementation)
+---
+
+## 🛠️ Technology Stack
+
+- **Frontend Framework**: [React](https://reactjs.org/) (v18+)
+- **Build Tool**: [Vite](https://vitejs.dev/)
+- **Drag & Drop**: [@dnd-kit/core](https://dndkit.com/) & `@dnd-kit/sortable`
+- **Routing**: [React Router DOM](https://reactrouter.com/) (v6)
+- **State Management**: React Context API & useReducer
+- **Styling**: Vanilla CSS with modern Flexbox/Grid layouts
+- **Testing**: Vitest & React Testing Library
+
+---
+
+## 📋 Prerequisites
+
+Before you begin, ensure you have the following installed on your machine:
+
+- **Node.js** (v14 or higher) - [Download Here](https://nodejs.org/)
+- **npm** (Node Package Manager) - Included with Node.js
+
+---
+
+## ⚙️ Setup & Installation
+
+Follow these steps to get the project running locally on your machine.
+
+### 1. Clone the Repository
+
+Open your terminal or command prompt and run:
+
+```bash
+git clone <repository-url>
+cd Hintro
+```
+*(Replace `<repository-url>` with the actual URL of this repository if applicable, or simply navigate to the project folder if you downloaded the source code.)*
+
+### 2. Install Dependencies
+
+Install all the necessary packages using npm:
+
+```bash
+npm install
+```
+*Note: If you encounter dependency conflicts (common with some React/testing library versions), you can try `npm install --force` or `npm install --legacy-peer-deps`.*
+
+### 3. Run the Development Server
+
+Start the local development server:
+
+```bash
+npm run dev
+```
+
+The terminal will display a local URL, typically `http://localhost:5173/`. Open this link in your browser to view the application.
+
+---
+
+## 🚀 Building for Production
+
+To create an optimized production build of the application:
+
+1. Run the build command:
+   ```bash
+   npm run build
+   ```
+   This will generate a `dist` folder containing the compiled HTML, CSS, and JavaScript files.
+
+2. To preview the production build locally:
+   ```bash
+   npm run preview
+   ```
+
+---
+
+## 🧪 Running Tests
+
+This project includes unit tests configured with Vitest. To run them:
+
+```bash
+npm test
+```
+
+---
+
+## 📂 Project Structure
+
+A brief overview of the key directories:
+
+```
+src/
+├── components/      # Reusable UI components (TaskCard, ActivityLog, etc.)
+├── context/         # React Context providers (AuthContext, BoardContext)
+├── pages/           # Main application pages (Login, TaskBoard)
+├── assets/          # Static assets like images/icons
+├── App.jsx          # Main application component & routing setup
+└── main.jsx         # Application entry point
+```
+
+---
+
+## 🛡️ Authentication Note
+
+Currently, the application uses a simulated token-based authentication system for demonstration purposes. 
+- **User data** is stored in Local Storage.
+- You can "Login" with any credentials (validation logic is client-side).
+- "Deep linking" to protected routes redirects to Login if no session exists.
+
+---
+
+## 📝 Usage Guide
+
+1. **Login**: Enter any credentials to access the board.
+2. **Add Task**: Use the top form to enter a title, priority, and date, then click "Add Task".
+3. **Move Task**: Click and hold any task card to drag it to a different column (To Do → Doing → Done).
+4. **Edit/Delete**: Hover over a task to see "Edit" (pencil) and "Delete" (X) icons.
+5. **Reset**: Use the "Reset Board" button in the header to clear all tasks and start fresh.
+
+---
+
+This README provides all the necessary steps to set up, run, and understand the Task Board application. Enjoy organizing!

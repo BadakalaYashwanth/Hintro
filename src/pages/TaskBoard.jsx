@@ -183,11 +183,7 @@ const TaskBoard = () => {
                 items={tasks.map(t => t.id)}
                 strategy={verticalListSortingStrategy}
             >
-                <div className="task-list" ref={setNodeRef => {/* This needs to be droppable if using useDroppable, but SortableContext acts as container too via items? No. */ }}>
-                    {/* 
-                        Actually using SortableContext implies the items are sortable. 
-                        But we also need the column area itself to be a drop target if it's empty.
-                     */}
+                <div className="task-list" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <DroppableContainer id={id}>
                         {tasks.map(task => (
                             <SortableTask key={task.id} task={task} />
@@ -200,22 +196,13 @@ const TaskBoard = () => {
 
     // Helper for Droppable area (Column body)
     const DroppableContainer = ({ id, children }) => {
-        const { isOver, setNodeRef } = useSortable({ id: id, data: { type: 'column' } });
-        // Using useSortable for column so it can accept items? No, useDroppable is better for static containers.
-        // But mixing Sortable and Droppable requires care.
-        // Actually, SortableContext items are droppable. 
-        // If list is empty, we need the container to be droppable.
-        // The easiest way is to make the SortableContext ID one thing, and the container useDroppable.
-
-        // Let's rely on standard useDroppable for columns.
         const { setNodeRef: setDroppableRef } = useSortable({
             id: id,
             disabled: true // Disable sorting for container itself
         });
-        // Wait, standard useSortable disabled: true?
 
         return (
-            <div ref={setDroppableRef} className="task-list" style={{ minHeight: '100px' }}>
+            <div ref={setDroppableRef} style={{ minHeight: '100%', flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {children}
             </div>
         );
@@ -299,7 +286,7 @@ const TaskBoard = () => {
                     <Column id="done-column" title="Done" tasks={doneTasks} />
                 </div>
 
-                <div style={{ marginTop: 'auto' }}>
+                <div className="activity-log-container">
                     <ActivityLog />
                 </div>
 

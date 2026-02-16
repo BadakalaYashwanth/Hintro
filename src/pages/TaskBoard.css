@@ -1,19 +1,22 @@
 /* Board Layout */
 .board-container {
     padding: 2rem;
-    height: 100vh;
+    min-height: 100vh;
+    /* Allow effective growth */
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     gap: 2rem;
     background-color: #1a1a1a;
     color: #e0e0e0;
+    /* Removed overflow: hidden to allow page scroll when columns are forced tall */
 }
 
 .board-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .reset-btn {
@@ -53,15 +56,14 @@
     padding: 1.5rem;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
 }
 
-/* Add Task Form */
 .add-task-form {
     display: flex;
     gap: 1rem;
     align-items: center;
     flex-wrap: wrap;
-    /* Allow wrapping on small screens */
 }
 
 .add-task-form input,
@@ -102,7 +104,6 @@
     background-color: #535bf2;
 }
 
-/* Filter Controls */
 .filter-controls {
     display: flex;
     gap: 1rem;
@@ -153,14 +154,24 @@
     display: flex;
     gap: 1.5rem;
     flex: 1;
+
+    /* 
+       FORCE TALL COLUMNS: 
+       Set a substantial minimum height (e.g., 75% of viewport) 
+       to guarantee the boxes are large vertically. 
+       Main page will scroll if needed. 
+    */
+    min-height: 75vh;
+
     overflow-x: auto;
-    padding-bottom: 1rem;
-    /* Space for scrollbar */
+    padding-bottom: 0.5rem;
 }
 
 .board-column {
     flex: 1;
     min-width: 300px;
+    height: 100%;
+
     background-color: #2a2a2a;
     border-radius: 8px;
     padding: 1rem;
@@ -179,6 +190,7 @@
     align-items: center;
     color: #fff;
     font-size: 1.2rem;
+    flex-shrink: 0;
 }
 
 .board-column h3 .count {
@@ -196,9 +208,9 @@
     gap: 1rem;
     overflow-y: auto;
     padding-right: 0.5rem;
+    min-height: 0;
 }
 
-/* Scrollbar Styling */
 .task-list::-webkit-scrollbar {
     width: 6px;
 }
@@ -214,4 +226,9 @@
 
 .task-list::-webkit-scrollbar-thumb:hover {
     background: #777;
+}
+
+/* Wrapper for ActivityLog to prevent shrink */
+.activity-log-container {
+    flex-shrink: 0;
 }
