@@ -59,6 +59,7 @@ const Login = () => {
                             style={{
                                 width: '100%',
                                 padding: '0.8rem',
+                                paddingRight: '2.5rem', // Accommodate browser autofill icons
                                 borderRadius: '4px',
                                 border: '1px solid #444',
                                 background: '#333',
