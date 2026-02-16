@@ -20,7 +20,23 @@ A modern, responsive Kanban-style Task Board application built with React and Vi
 
 ---
 
-## 🛠️ Technology Stack
+## � Layout Architecture
+
+The application implements a robust Kanban layout with specific design decisions:
+
+- **Full-Height Containers**: The board container is kept full-height to divide the page into clear vertical sections.
+- **Adaptive Columns**: The columns wrapper explicitly takes up all remaining vertical space, acting as the main task board area.
+- **Internal Scrolling**: Scrolling responsibility is moved *inside* the column content rather than the entire page.
+
+**This specifically ensures:**
+- Columns stretch vertically and align properly with equal height.
+- Empty columns still look intentional and usable.
+- Tasks stack naturally inside columns.
+- The **Activity Log** sits at the bottom without interfering with column height.
+
+---
+
+## �🛠️ Technology Stack
 
 - **Frontend Framework**: [React](https://reactjs.org/) (v18+)
 - **Build Tool**: [Vite](https://vitejs.dev/)
