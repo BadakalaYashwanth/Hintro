@@ -4,11 +4,7 @@ A modern, responsive Kanban-style Task Board application built with React and Vi
 
 ## 🚀 Live Demo
 
-<<<<<<< HEAD
-[**View Live Deployment**](https://yourtaskboard.netlify.app/login)
-=======
-[**View Live Deployment**](https://yourtaskboard.netlify.app/board)
->>>>>>> 1a77a759628b8686bb5caabcafeaf907c6a4b0cb
+[**View Live Deployment**](https://listyou.netlify.app/login)
 
 ---
 
