@@ -1,26 +1,35 @@
+/* Define global CSS variables and base styles */
 :root {
+  /* Set standard font stack */
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
+  /* Default color scheme to light/dark based on system preference */
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
+  /* Default text color */
   background-color: #242424;
+  /* Default background color */
 
+  /* Optimize font rendering */
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Base body styles */
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  /* Ensure body takes full viewport height */
 }
 
+/* React Root container styles */
 #root {
-  /* Ensure root takes full viewport so nested components can layout properly */
+  /* Ensure root takes full viewport so nested components (App) can layout properly */
   width: 100%;
   min-height: 100vh;
 }
@@ -35,7 +44,7 @@ input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 30px #333 inset !important;
-    -webkit-text-fill-color: white !important;
-    transition: background-color 5000s ease-in-out 0s;
+  -webkit-box-shadow: 0 0 0 30px #333 inset !important;
+  -webkit-text-fill-color: white !important;
+  transition: background-color 5000s ease-in-out 0s;
 }

@@ -1,16 +1,31 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import '../index.css'; // Make sure to import styles if needed
+import { useNavigate } from 'react-router-dom'; // Hook for programmatic navigation
+import { useAuth } from '../context/AuthContext'; // Hook to access auth actions
+import '../index.css'; // Import global styles
 
+/**
+ * Login Component
+ * 
+ * Purpose: Provides a user interface for logging into the application.
+ * It handles:
+ * 1. Capturing email and password input.
+ * 2. Authenticating via the AuthContext.
+ * 3. Handling login errors.
+ * 4. Navigating to the board upon success.
+ */
 const Login = () => {
+    // Local state variables for form inputs
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
     const [error, setError] = useState('');
+
+    // Access the login function from the AuthContext
     const { login } = useAuth();
+    // Hook to redirect users after successful login
     const navigate = useNavigate();
 
+    // Handler for form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');

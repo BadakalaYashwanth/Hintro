@@ -1,44 +1,56 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 
-// Simple ID generator
+// Utility functions for generating unique IDs and timestamps
 const generateId = () => Math.random().toString(36).substr(2, 9);
 const timestamp = () => new Date().toISOString();
 
+// Create the context for Board data
 const BoardContext = createContext();
 
+// Initial state for the reducer
 const initialState = {
-    tasks: [],
-    activityLog: []
+    tasks: [],       // Array to hold all task objects
+    activityLog: []  // Array to hold history of actions for the activity log
 };
 
-// Action types
+// Action types for the reducer to switch on
 export const ADD_TASK = 'ADD_TASK';
 export const UPDATE_TASK = 'UPDATE_TASK';
 export const DELETE_TASK = 'DELETE_TASK';
-export const MOVE_TASK = 'MOVE_TASK';
-export const RESET_BOARD = 'RESET_BOARD';
-export const SET_STATE = 'SET_STATE';
+export const MOVE_TASK = 'MOVE_TASK';      // For drag and drop status changes
+export const RESET_BOARD = 'RESET_BOARD';  // To clear all data
+export const SET_STATE = 'SET_STATE';      // To hydrate state from localStorage
 
+/**
+ * Board Reducer
+ * 
+ * Handles all state transitions for the board.
+ * - state: Current state of the board (tasks, logs)
+ * - action: Object containing 'type' and 'payload'
+ */
 const boardReducer = (state, action) => {
     switch (action.type) {
+        // Hydrate state from external source (localStorage)
         case SET_STATE:
             return action.payload;
 
+        // Reset the board to empty state
         case RESET_BOARD:
             return {
                 tasks: [],
                 activityLog: []
             };
 
+        // Add a new task to the list
         case ADD_TASK:
             const newTask = {
                 id: generateId(),
                 title: action.payload.title,
                 description: action.payload.description || '',
-                priority: action.payload.priority || 'medium', // low, medium, high
+                priority: action.payload.priority || 'medium', // Default priority
                 dueDate: action.payload.dueDate || null,
                 tags: action.payload.tags || [],
-                status: 'todo', // Default status: todo, doing, done
+                status: 'todo', // New tasks start in 'To Do'
                 createdAt: timestamp()
             };
 
@@ -51,9 +63,10 @@ const boardReducer = (state, action) => {
             return {
                 ...state,
                 tasks: [...state.tasks, newTask],
-                activityLog: [addLog, ...state.activityLog] // Newest logs first
+                activityLog: [addLog, ...state.activityLog] // Prepend new log
             };
 
+        // Update properties of an existing task
         case UPDATE_TASK:
             {
                 const { id, updates } = action.payload;
@@ -77,6 +90,7 @@ const boardReducer = (state, action) => {
                 };
             }
 
+        // Change the status of a task (e.g., Todo -> Doing)
         case MOVE_TASK:
             {
                 const { id, newStatus } = action.payload;
@@ -98,6 +112,7 @@ const boardReducer = (state, action) => {
                 };
             }
 
+        // Remove a task from the board
         case DELETE_TASK:
             {
                 const taskToDelete = state.tasks.find(t => t.id === action.payload);
@@ -119,10 +134,16 @@ const boardReducer = (state, action) => {
     }
 };
 
+/**
+ * BoardProvider Component
+ * 
+ * Provides the board state and dispatch function to its children.
+ * Handles persistence of board data to localStorage.
+ */
 export const BoardProvider = ({ children }) => {
     const [state, dispatch] = useReducer(boardReducer, initialState);
 
-    // Load from localStorage on mount
+    // Effect: Load state from localStorage when the component mounts
     useEffect(() => {
         const storedState = localStorage.getItem('boardState');
         if (storedState) {
@@ -137,15 +158,10 @@ export const BoardProvider = ({ children }) => {
         }
     }, []);
 
-    // Save to localStorage on change
+    // Effect: Save state to localStorage whenever it changes
     useEffect(() => {
-        // Avoid saving initial empty state if we haven't loaded yet? 
-        // Actually, initializing with empty and then loading is fine.
-        // If we load and it's empty, we save empty.
-        // We should differentiate between "initial load" and "subsequent updates" if we want to be safe,
-        // but React's effect timing usually handles this okay for simple apps.
-        // However, to be safe, let's only save if we have *something* or if we explicitly want to save empty.
-        // With current reducer, state is always valid object.
+        // Prevent overwriting storage with initial empty state unless explicitly intended?
+        // Logic here simply saves non-default states
         if (state !== initialState) {
             localStorage.setItem('boardState', JSON.stringify(state));
         }
@@ -158,6 +174,7 @@ export const BoardProvider = ({ children }) => {
     );
 };
 
+// Custom hook to consume the BoardContext
 export const useBoard = () => {
     const context = useContext(BoardContext);
     if (!context) {

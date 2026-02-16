@@ -1,13 +1,22 @@
 import React from 'react';
-import { useBoard } from '../context/BoardContext';
-import './ActivityLog.css';
+import { useBoard } from '../context/BoardContext'; // Import hook to access global board state
+import './ActivityLog.css'; // Import styles
 
+/**
+ * ActivityLog Component
+ * 
+ * Purpose: Displays a list of recent actions performed on the board (e.g., "Task created", "Task moved").
+ * It reads the 'activityLog' array from the global BoardContext state.
+ */
 const ActivityLog = () => {
+    // Access the global state which contains the activityLog array
     const { state } = useBoard();
 
-    // Safety check for activityLog being undefined (though context initializes it)
+    // Ensure 'logs' is always an array to prevent crashes if state is undefined
     const logs = state.activityLog || [];
-    const recentLogs = logs.slice(0, 10); // Display only latest 10
+
+    // Limits the display to the most recent 10 items for cleaner UI
+    const recentLogs = logs.slice(0, 10);
 
     return (
         <div className="activity-log">

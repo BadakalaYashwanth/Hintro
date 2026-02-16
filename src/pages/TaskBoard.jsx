@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useBoard, ADD_TASK, MOVE_TASK, RESET_BOARD } from '../context/BoardContext';
+import { useAuth } from '../context/AuthContext'; // Hook for authentication actions (logout)
+import { useBoard, ADD_TASK, MOVE_TASK, RESET_BOARD } from '../context/BoardContext'; // Hook for board state and actions
 import { useNavigate } from 'react-router-dom';
 import {
     DndContext,
@@ -9,23 +9,27 @@ import {
     useSensors,
     PointerSensor,
     KeyboardSensor,
-    defaultDropAnimationSideEffects,
     DragOverlay
-} from '@dnd-kit/core';
+} from '@dnd-kit/core'; // Core DnD library components
 import {
     sortableKeyboardCoordinates,
     useSortable,
     SortableContext,
     verticalListSortingStrategy
-} from '@dnd-kit/sortable';
+} from '@dnd-kit/sortable'; // Sortable helpers for drag-and-drop lists
 import { CSS } from '@dnd-kit/utilities';
 
-import './TaskBoard.css';
-import '../components/TaskCard.css'; // Ensure TaskCard styles are loaded
-import TaskCard from '../components/TaskCard';
-import ActivityLog from '../components/ActivityLog';
+import './TaskBoard.css'; // Board specific styles
+import '../components/TaskCard.css';
+import TaskCard from '../components/TaskCard'; // Component to render individual task cards
+import ActivityLog from '../components/ActivityLog'; // Component to show board history
 
-// SortableTask Wrapper
+/**
+ * SortableTask Component
+ * 
+ * Purpose: A wrapper around TaskCard that gives it drag-and-drop capabilities.
+ * It uses the 'useSortable' hook to connect the card to the dnd-kit system.
+ */
 const SortableTask = ({ task }) => {
     const {
         attributes,
@@ -53,44 +57,61 @@ const SortableTask = ({ task }) => {
     );
 };
 
+/**
+ * TaskBoard Component
+ * 
+ * Purpose: The main container for the Kanban board application.
+ * Responsibilities:
+ * 1. Manages local state for new task inputs, searching, and filtering.
+ * 2. Integrates with 'useBoard' to get global tasks and dispatch actions.
+ * 3. Sets up the Drag-and-Drop context (sensors, collision detection).
+ * 4. Renders the board columns and the activity log.
+ */
 const TaskBoard = () => {
+    // Access global state and actions
     const { logout } = useAuth();
     const { state, dispatch } = useBoard();
     const navigate = useNavigate();
+
+    // Local state for the "Add Task" form
     const [newTaskTitle, setNewTaskTitle] = useState('');
     const [newTaskPriority, setNewTaskPriority] = useState('medium');
     const [newTaskDueDate, setNewTaskDueDate] = useState('');
 
-    // Search & Filter State
+    // Local state for Searching, Filtering, and Sorting
     const [searchQuery, setSearchQuery] = useState('');
     const [priorityFilter, setPriorityFilter] = useState('all');
     const [sortByDate, setSortByDate] = useState(false);
 
-    // Dnd State
+    // State to track which item is currently being dragged (for overlay)
     const [activeId, setActiveId] = useState(null);
 
+    // Dnd Sensors: Define how drag interactions are detected (Pointer = Mouse/Touch, Keyboard)
     const sensors = useSensors(
         useSensor(PointerSensor, {
             activationConstraint: {
-                distance: 5,
+                distance: 5, // Drag must move 5px before starting (prevents accidental clicks)
             },
         }),
         useSensor(KeyboardSensor, {
-            coordinateGetter: sortableKeyboardCoordinates,
+            coordinateGetter: sortableKeyboardCoordinates, // Improved keyboard navigation
         })
     );
 
+    // Handle user logout
     const handleLogout = () => {
         logout();
         navigate('/login');
     };
 
+    // Handle resetting the entire board
     const handleReset = () => {
         if (window.confirm("Are you sure you want to reset the board? All tasks will be deleted.")) {
             dispatch({ type: RESET_BOARD });
         }
     };
 
+    // Handle creating a new task
     const handleAddTask = (e) => {
         e.preventDefault();
         if (!newTaskTitle.trim()) return;
@@ -102,45 +123,49 @@ const TaskBoard = () => {
                 description: '',
                 priority: newTaskPriority,
                 dueDate: newTaskDueDate || null,
-                status: 'todo'
+                status: 'todo' // Default status
             }
         });
+        // Reset form fields
         setNewTaskTitle('');
         setNewTaskPriority('medium');
         setNewTaskDueDate('');
     };
 
+    // Callback when dragging starts
     const handleDragStart = (event) => {
-        setActiveId(event.active.id);
+        setActiveId(event.active.id); // Track the Active ID to render a drag overlay
     };
 
+    // Callback when dragging ends (drop)
     const handleDragEnd = (event) => {
         const { active, over } = event;
-        setActiveId(null);
+        setActiveId(null); // Clear active ID
 
-        if (!over) return;
+        if (!over) return; // Dropped outside a valid area
 
         const activeId = active.id;
         const overId = over.id;
 
-        // Find the task being moved
+        // Find the full task object being moved
         const activeTask = state.tasks.find(t => t.id === activeId);
         if (!activeTask) return;
 
-        // Determine destination status
+        // Determine destination status based on where it was dropped
         let newStatus = activeTask.status;
 
-        // Check if dropped on a column container directly
+        // Check if dropped directly on a Column container (e.g., "Done" column empty space)
         if (['todo-column', 'doing-column', 'done-column'].includes(overId)) {
             newStatus = overId.replace('-column', '');
         } else {
-            // Dropped on another task, find that task's status
+            // Dropped on another task, inherit that task's status
             const overTask = state.tasks.find(t => t.id === overId);
             if (overTask) {
                 newStatus = overTask.status;
             }
         }
 
+        // If status changed, dispatch the move action
         if (activeTask.status !== newStatus) {
             dispatch({
                 type: MOVE_TASK,
@@ -157,24 +182,33 @@ const TaskBoard = () => {
         // Assuming simple status update is sufficient based on "Dropping a task updates its status".
     };
 
-    // Derived State (Filtering & Sorting)
+    // Derived State: Filter and Sort tasks before rendering
     const filteredTasks = state.tasks.filter(task => {
+        // partial match on title (case insensitive)
         const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase());
+        // match specific priority or 'all'
         const matchesPriority = priorityFilter === 'all' || task.priority === priorityFilter;
         return matchesSearch && matchesPriority;
     }).sort((a, b) => {
-        if (!sortByDate) return 0; // Default order (creation time usually, or id)
-        if (!a.dueDate) return 1; // No due date last
+        // Optional sorting by due date
+        if (!sortByDate) return 0; // Keep insertion order
+        if (!a.dueDate) return 1; // Tasks without date go to bottom
         if (!b.dueDate) return -1;
         return new Date(a.dueDate) - new Date(b.dueDate);
     });
 
+    // Categorize tasks into columns based on status
     const todoTasks = filteredTasks.filter(t => t.status === 'todo');
     const doingTasks = filteredTasks.filter(t => t.status === 'doing');
     const doneTasks = filteredTasks.filter(t => t.status === 'done');
 
     const activeTask = activeId ? state.tasks.find(t => t.id === activeId) : null;
 
+    /**
+     * Column Component
+     * Renders a vertical list of tasks for a specific status.
+     * Uses 'SortableContext' to enable reordering within the list.
+     */
     const Column = ({ id, title, tasks }) => (
         <div className="board-column">
             <h3>{title} <span className="count">{tasks.length}</span></h3>
@@ -194,11 +228,15 @@ const TaskBoard = () => {
         </div>
     );
 
-    // Helper for Droppable area (Column body)
+    /**
+     * DroppableContainer Component
+     * A utility wrapper that makes the column body a valid drop target.
+     * This ensures you can drop a task into an empty column.
+     */
     const DroppableContainer = ({ id, children }) => {
         const { setNodeRef: setDroppableRef } = useSortable({
             id: id,
-            disabled: true // Disable sorting for container itself
+            disabled: true // Disable sorting for the container itself (it's stationary)
         });
 
         return (
@@ -209,9 +247,10 @@ const TaskBoard = () => {
     };
 
     return (
+        // Main Drag-and-Drop Context Provider
         <DndContext
             sensors={sensors}
-            collisionDetection={closestCorners}
+            collisionDetection={closestCorners} // Algorithm to detect which container is under the dragged item
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
         >

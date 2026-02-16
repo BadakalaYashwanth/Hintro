@@ -1,10 +1,26 @@
 import React, { useState } from 'react';
-import { useBoard, DELETE_TASK, UPDATE_TASK } from '../context/BoardContext';
-import './TaskCard.css';
+import { useBoard, DELETE_TASK, UPDATE_TASK } from '../context/BoardContext'; // Import context to access board actions (delete, update)
+import './TaskCard.css'; // Import styles for the task card
 
+/**
+ * TaskCard Component
+ * 
+ * Purpose: This component displays the details of a single task (title, description, priority, etc.).
+ * It also handles:
+ * 1. Editing the task (switching to an edit form).
+ * 2. Deleting the task.
+ * 3. Drag-and-drop functionality (receiving drag props from its parent).
+ * 
+ * Usage: Used inside the 'Column' component to render each item in the task list.
+ */
 const TaskCard = ({ task, dragRef, style, attributes, listeners, isDragging }) => {
+    // Access the 'dispatch' function from BoardContext to send actions to the global state
     const { dispatch } = useBoard();
+
+    // Local state to toggle between 'view' mode and 'edit' mode
     const [isEditing, setIsEditing] = useState(false);
+
+    // Local state to temporary hold form data while editing
     const [editForm, setEditForm] = useState({ ...task });
 
     const handleDelete = () => {
